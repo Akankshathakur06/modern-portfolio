@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StarfieldBackground from "@/components/StarfieldBackground";
+import CustomCursor from "@/components/CustomCursor";
 
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-outfit" });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scroll-smooth">
       <body className={`${outfit.variable} font-outfit bg-background text-foreground antialiased`}>
+        <CustomCursor />
         <StarfieldBackground />
         <div className="relative z-10 flex flex-col min-h-screen">
           <Navbar />
