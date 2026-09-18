@@ -1,73 +1,71 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
 
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About me", href: "/about" },
-    { name: "Projects", href: "/projects" },
-    { name: "Contacts", href: "/contact" },
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navItems = [
+    { name: "HOME", href: "#home" },
+    { name: "ABOUT", href: "#about" },
+    { name: "PROJECTS", href: "#projects" },
+    { name: "SKILLS", href: "#skills" },
+    { name: "CONTACT", href: "#contact" },
   ];
 
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-transparent h-24 flex items-center">
-      <div className="container mx-auto px-10 flex justify-end items-center">
-        {/* Desktop Nav */}
-        <div className="hidden md:flex space-x-12">
-          {navLinks.map((link, index) => (
-            <motion.div
-              key={link.name}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+    <motion.nav
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+      className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ${
+        scrolled ? "w-[90%] md:w-auto" : "w-[95%] md:w-auto"
+      }`}
+    >
+      <div className="glass-card bg-black/40 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 flex items-center justify-between md:justify-center gap-8 shadow-lg shadow-black/50">
+        
+        {/* Mobile Logo (visible only on small screens) */}
+        <div className="md:hidden font-bold text-white tracking-widest text-sm">
+          AKANKSHA
+        </div>
+
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-8">
+          {navItems.map((item) => (
+            <a
+              key={item.name}
+              href={item.href}
+              onClick={(e) => handleScrollTo(e, item.href)}
+              className="text-xs font-semibold tracking-widest text-gray-400 hover:text-white transition-colors relative group"
             >
-              <Link 
-                href={link.href} 
-                className="text-sm font-medium text-white/70 hover:text-white transition-colors tracking-widest uppercase"
-              >
-                {link.name}
-              </Link>
-            </motion.div>
+              {item.name}
+              <span className="absolute -bottom-1 left-0 w-0 h-px bg-accent-blue transition-all duration-300 group-hover:w-full" />
+            </a>
           ))}
         </div>
 
-        {/* Mobile menu button */}
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)} className="text-white focus:outline-none p-2">
-            <div className="space-y-1.5">
-              <span className={`block w-6 h-0.5 bg-white transition-transform ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-              <span className={`block w-6 h-0.5 bg-white transition-opacity ${isOpen ? 'opacity-0' : ''}`}></span>
-              <span className={`block w-6 h-0.5 bg-white transition-transform ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-            </div>
-          </button>
+        {/* Mobile Menu Button - simplified for minimal approach */}
+        <div className="md:hidden text-xs font-semibold tracking-widest text-gray-400">
+          MENU
         </div>
       </div>
-
-      {/* Mobile Nav Overlay */}
-      {isOpen && (
-        <motion.div 
-          className="md:hidden fixed inset-0 bg-[#0a0a0a] z-40 flex flex-col items-center justify-center space-y-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              href={link.href} 
-              onClick={() => setIsOpen(false)} 
-              className="text-3xl font-bold text-white hover:text-blue-400 transition-colors"
-            >
-              {link.name}
-            </Link>
-          ))}
-        </motion.div>
-      )}
-    </nav>
+    </motion.nav>
   );
-};
-export default Navbar;
+}
